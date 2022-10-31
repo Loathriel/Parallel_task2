@@ -92,11 +92,11 @@
             // 
             // results
             // 
-            this.results.Location = new System.Drawing.Point(307, 42);
+            this.results.Location = new System.Drawing.Point(273, 33);
             this.results.Multiline = true;
             this.results.Name = "results";
             this.results.ReadOnly = true;
-            this.results.Size = new System.Drawing.Size(100, 100);
+            this.results.Size = new System.Drawing.Size(150, 150);
             this.results.TabIndex = 3;
             this.results.Text = "Sequential time:\r\n0 ms\r\n\r\nParallel time: \r\n0 ms";
             // 

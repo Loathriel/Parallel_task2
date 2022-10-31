@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -9,10 +10,11 @@ namespace Parallel2
 {
     internal class Working
     {
-        private readonly int repeats = 100; 
+        private readonly int repeats = 100;
 
         int n1_y, n2_x;
         double[] data;
+        double[] copy;
 
         public Working(int n1, int n2)
         {
@@ -22,31 +24,28 @@ namespace Parallel2
 
         private void newList()
         {
+            copy = data;
+
             data = new double[n2_x];
 
             for (int i = 0; i < n2_x; ++i)
-                data[i] = 0.01 * i * (i % 3 - 1);
+            {
+                int index = i + 1;
+                data[i] = 1;
+            }
         }
 
         public double sequential()
         {
             newList();
             var sw = Stopwatch.StartNew();
-            for(int r = 0; r < repeats; ++r)
-                for (int j = 0; j < n1_y; ++j)
-                {
-                    for (int i = 1; i < n2_x - 1; ++i)
-                    {
-                        double sum = data[i];
-                        if (i > 0)
-                            sum += data[i - 1];
-                        if (i < n2_x - 1)
-                            sum += data[i + 1];
-                        data[i] = sum;
-                    }
-                }
+            for (int j = 0; j < n1_y; ++j)
+            {
+                for (int i = 0; i < n2_x; ++i)
+                    count(i);
+            }
             sw.Stop();
-            return sw.ElapsedMilliseconds / repeats;
+            return sw.ElapsedMilliseconds;
         }
 
         public double parallel()
@@ -55,30 +54,66 @@ namespace Parallel2
 
             int limit = 2 * n1_y + n2_x - 2;
 
-            var sw = Stopwatch.StartNew();
-            for (int r = 0; r < repeats; ++r) 
-                for (int v = 1; v <= limit; ++v)
+            List<ConcurrentQueue<int>> space = new List<ConcurrentQueue<int>>();
+
+            for (int v = 1; v <= limit; ++v)
+            {
+                ConcurrentQueue<int> ints = new ConcurrentQueue<int>();
+                int start = v % 2 == 0 ? 2 : 1;
+                for (int i = start; i <= n2_x; i += 2)
                 {
-                    int botLim = v - 2 * n1_y + 2;
-                    botLim = botLim > 1? botLim : 1;
-                    botLim = botLim < n2_x ? botLim : n2_x;
-                    int topLim = v < n2_x? v : n2_x;
-                    topLim += 1;
-                    Parallel.ForEach(BetterEnumerable.SteppedRange(botLim, topLim, 2), i =>
-                    {
-                        double sum = data[i - 1];
-                        if (i > 1)
-                            sum += data[i - 2];
-                        if (i < n2_x )
-                            sum += data[i];
-                        data[i - 1] = sum;
-                    }
-                    );
+                    int j = (v - i + 2) / 2;
+                    if (j < 1 || j > n1_y)
+                        continue;
+                    int index = i - 1;
+                    ints.Enqueue(index);
                 }
+                space.Add(ints);
+            }
+
+            var sw = Stopwatch.StartNew();
+            Thread[] threads = new Thread[]
+{
+                    new Thread(() => parallel(space)),
+                    new Thread(() => parallel(space)),
+                    new Thread(() => parallel(space)),
+                    new Thread(() => parallel(space))
+};
+            foreach (var thread in threads)
+                thread.Start();
+            foreach (var thread in threads)
+                thread.Join();
             sw.Stop();
-            return sw.ElapsedMilliseconds / repeats;
+            return sw.ElapsedMilliseconds;
+        }
+
+        public bool check()
+        {
+            for (int i = 0; i < n2_x; ++i)
+                if (data[i] != copy[i])
+                    return false;
+            return true;
+        }
+        public void parallel(List<ConcurrentQueue<int>> list)
+        {
+            foreach(var queue in list)
+                while(queue.Count > 0)
+                {
+                    queue.TryDequeue(out int index);
+                    count(index);
+                }
+        }
+        public void count(int i)
+        {
+            double sum = data[i];
+            if (i > 0)
+                sum += data[i - 1];
+            if (i < n2_x - 1)
+                sum += data[i + 1];
+            data[i] = sum;
         }
     }
+
     public static class BetterEnumerable
     {
         public static IEnumerable<int> SteppedRange(int fromInclusive, int toExclusive, int step)
