@@ -54,11 +54,11 @@ namespace Parallel2
 
             int limit = 2 * n1_y + n2_x - 2;
 
-            List<ConcurrentQueue<int>> space = new List<ConcurrentQueue<int>>();
+            List<List<int>> space = new List<List<int>>();
 
             for (int v = 1; v <= limit; ++v)
             {
-                ConcurrentQueue<int> ints = new ConcurrentQueue<int>();
+                List<int> ints = new List<int>();
                 int start = v % 2 == 0 ? 2 : 1;
                 for (int i = start; i <= n2_x; i += 2)
                 {
@@ -66,23 +66,17 @@ namespace Parallel2
                     if (j < 1 || j > n1_y)
                         continue;
                     int index = i - 1;
-                    ints.Enqueue(index);
+                    ints.Add(index);
                 }
                 space.Add(ints);
             }
 
             var sw = Stopwatch.StartNew();
-            Thread[] threads = new Thread[]
-{
-                    new Thread(() => parallel(space)),
-                    new Thread(() => parallel(space)),
-                    new Thread(() => parallel(space)),
-                    new Thread(() => parallel(space))
-};
-            foreach (var thread in threads)
-                thread.Start();
-            foreach (var thread in threads)
-                thread.Join();
+            foreach (var ints in space)
+            {
+                var partitioner = Partitioner.Create(ints);
+                Parallel.ForEach(partitioner, (index, loopState) => count(index));
+            }
             sw.Stop();
             return sw.ElapsedMilliseconds;
         }
@@ -93,15 +87,6 @@ namespace Parallel2
                 if (data[i] != copy[i])
                     return false;
             return true;
-        }
-        public void parallel(List<ConcurrentQueue<int>> list)
-        {
-            foreach(var queue in list)
-                while(queue.Count > 0)
-                {
-                    queue.TryDequeue(out int index);
-                    count(index);
-                }
         }
         public void count(int i)
         {
