@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Security.Permissions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -20,6 +21,7 @@ namespace Parallel2
         {
             this.n1_y = n1;
             this.n2_x = n2;
+            copy = data = new double[0];
         }
 
         private void newList()
@@ -31,7 +33,7 @@ namespace Parallel2
             for (int i = 0; i < n2_x; ++i)
             {
                 int index = i + 1;
-                data[i] = 1;
+                data[i] = 1 * (index % 3 - 1);
             }
         }
 
@@ -39,13 +41,12 @@ namespace Parallel2
         {
             newList();
             var sw = Stopwatch.StartNew();
-            for (int j = 0; j < n1_y; ++j)
-            {
-                for (int i = 0; i < n2_x; ++i)
-                    count(i);
-            }
+            for (int r = 0; r < repeats; ++r)
+                for (int j = 0; j < n1_y; ++j)
+                    for (int i = 0; i < n2_x; ++i)
+                        count(i);
             sw.Stop();
-            return sw.ElapsedMilliseconds;
+            return sw.ElapsedMilliseconds / repeats;
         }
 
         public double parallel()
@@ -72,13 +73,14 @@ namespace Parallel2
             }
 
             var sw = Stopwatch.StartNew();
-            foreach (var ints in space)
-            {
-                var partitioner = Partitioner.Create(ints);
-                Parallel.ForEach(partitioner, (index, loopState) => count(index));
-            }
+            for (int r = 0; r < repeats; ++r) 
+                foreach (var ints in space)
+                {
+                    var partitioner = Partitioner.Create(ints);
+                    Parallel.ForEach(partitioner, (index, loopState) => count(index));
+                }
             sw.Stop();
-            return sw.ElapsedMilliseconds;
+            return sw.ElapsedMilliseconds / repeats;
         }
 
         public bool check()
@@ -96,17 +98,6 @@ namespace Parallel2
             if (i < n2_x - 1)
                 sum += data[i + 1];
             data[i] = sum;
-        }
-    }
-
-    public static class BetterEnumerable
-    {
-        public static IEnumerable<int> SteppedRange(int fromInclusive, int toExclusive, int step)
-        {
-            for (var i = fromInclusive; i < toExclusive; i += step)
-            {
-                yield return i;
-            }
         }
     }
 }

@@ -24,7 +24,7 @@ namespace Parallel2
 
         private void printResults(double t, double tp, bool c)
         {
-            results.Text = $"Sequential time:\r\n{t} ms\r\n\r\nParallel time: \r\n{tp} ms\r\n\r\n{c}";
+            results.Text = $"Sequential time:\r\n{t} ms\r\n\r\nParallel time: \r\n{tp} ms\r\n\r\nSame result: {c}";
         }
     }
 }

@@ -32,13 +32,15 @@
             this.n1_y = new System.Windows.Forms.NumericUpDown();
             this.n2_x = new System.Windows.Forms.NumericUpDown();
             this.results = new System.Windows.Forms.TextBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.n1_y)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.n2_x)).BeginInit();
             this.SuspendLayout();
             // 
             // magic
             // 
-            this.magic.Location = new System.Drawing.Point(169, 182);
+            this.magic.Location = new System.Drawing.Point(57, 160);
             this.magic.Name = "magic";
             this.magic.Size = new System.Drawing.Size(75, 23);
             this.magic.TabIndex = 0;
@@ -92,19 +94,38 @@
             // 
             // results
             // 
-            this.results.Location = new System.Drawing.Point(273, 33);
+            this.results.Location = new System.Drawing.Point(194, 33);
             this.results.Multiline = true;
             this.results.Name = "results";
             this.results.ReadOnly = true;
             this.results.Size = new System.Drawing.Size(150, 150);
             this.results.TabIndex = 3;
-            this.results.Text = "Sequential time:\r\n0 ms\r\n\r\nParallel time: \r\n0 ms";
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(27, 60);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(29, 15);
+            this.label1.TabIndex = 4;
+            this.label1.Text = "n1: j";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(27, 105);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(29, 15);
+            this.label2.TabIndex = 5;
+            this.label2.Text = "n2: i";
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(461, 286);
+            this.ClientSize = new System.Drawing.Size(394, 241);
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.results);
             this.Controls.Add(this.n2_x);
             this.Controls.Add(this.n1_y);
@@ -124,5 +145,7 @@
         private NumericUpDown n1_y;
         private NumericUpDown n2_x;
         private TextBox results;
+        private Label label1;
+        private Label label2;
     }
 }
