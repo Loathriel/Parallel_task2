@@ -50,7 +50,7 @@
             // 
             // n1_y
             // 
-            this.n1_y.Location = new System.Drawing.Point(76, 58);
+            this.n1_y.Location = new System.Drawing.Point(62, 58);
             this.n1_y.Maximum = new decimal(new int[] {
             999999,
             0,
@@ -62,7 +62,7 @@
             0,
             0});
             this.n1_y.Name = "n1_y";
-            this.n1_y.Size = new System.Drawing.Size(56, 23);
+            this.n1_y.Size = new System.Drawing.Size(70, 23);
             this.n1_y.TabIndex = 1;
             this.n1_y.Value = new decimal(new int[] {
             5,
@@ -72,7 +72,7 @@
             // 
             // n2_x
             // 
-            this.n2_x.Location = new System.Drawing.Point(76, 103);
+            this.n2_x.Location = new System.Drawing.Point(62, 103);
             this.n2_x.Maximum = new decimal(new int[] {
             999999,
             0,
@@ -84,7 +84,7 @@
             0,
             0});
             this.n2_x.Name = "n2_x";
-            this.n2_x.Size = new System.Drawing.Size(56, 23);
+            this.n2_x.Size = new System.Drawing.Size(70, 23);
             this.n2_x.TabIndex = 2;
             this.n2_x.Value = new decimal(new int[] {
             5,

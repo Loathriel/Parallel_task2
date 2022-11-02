@@ -11,7 +11,7 @@ namespace Parallel2
 {
     internal class Working
     {
-        private readonly int repeats = 100;
+        private readonly int repeats = 1;
 
         int n1_y, n2_x;
         double[] data;
